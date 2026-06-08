@@ -1,0 +1,97 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String   @id @default(cuid())
+  email           String   @unique
+  passwordHash    String
+  name            String
+  balance         Float    @default(0)
+  carriedDebt     Int      @default(0)   // minutes of debt carried over for entertainment
+  timezone        String   @default("Europe/Moscow")
+  wakeTime        String?  // "07:00"
+  sleepTime       String?  // "23:00"
+  goalAmount      Float    @default(1000000)
+  baseRewardMinutes Int    @default(60)  // base entertainment minutes per day
+  onboarded       Boolean  @default(false)
+  startDate       String?  // "2026-06-09" - first day of plan
+  createdAt       DateTime @default(now())
+
+  tasks           Task[]
+  completions     TaskCompletion[]
+  reports         DailyReport[]
+  balanceLogs     BalanceLog[]
+}
+
+model Task {
+  id              String   @id @default(cuid())
+  userId          String
+  title           String
+  timeStart       String?  // "07:00" or null = all-day task
+  timeEnd         String?  // "07:30" or null
+  rewardAmount    Float    // $ earned when completed (e.g., 1000)
+  penaltyAmount   Float    // $ lost when not completed (e.g., 3000)
+  appliesWeekdays Boolean  @default(true)
+  appliesWeekends Boolean  @default(false)
+  isActive        Boolean  @default(true)
+  orderIndex      Int      @default(0)
+  isBreak         Boolean  @default(false) // auto-generated 10-min break
+  createdAt       DateTime @default(now())
+
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  completions     TaskCompletion[]
+}
+
+model TaskCompletion {
+  id            String   @id @default(cuid())
+  taskId        String
+  userId        String
+  date          String   // "2026-06-08"
+  status        String   // "done" | "not_done" | "done_late"
+  comment       String?  // why task was not completed
+  completedAt   DateTime?
+
+  task          Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([taskId, date])
+}
+
+model DailyReport {
+  id                  String   @id @default(cuid())
+  userId              String
+  date                String   // "2026-06-08"
+  tasksTotal          Int
+  tasksCompleted      Int
+  tasksDoneLate       Int      @default(0)
+  earned              Float    @default(0)
+  lost                Float    @default(0)
+  gamesSocialAllowed  Int      // minutes allowed
+  gamesSocialActual   Int      // minutes actually spent
+  gamesPenaltyMinutes Int      @default(0) // double penalty minutes carried to next day
+  mood                Int?     // 1-10
+  reviewCompleted     Boolean  @default(false)
+  createdAt           DateTime @default(now())
+
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+}
+
+model BalanceLog {
+  id          String   @id @default(cuid())
+  userId      String
+  date        String   // "2026-06-08"
+  amount      Float    // positive or negative
+  type        String   // "reward" | "penalty" | "games_penalty"
+  description String
+  createdAt   DateTime @default(now())
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
