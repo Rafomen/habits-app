@@ -1,9 +1,11 @@
+
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { getDb } from '@/lib/prisma';
 import { createToken } from '@/lib/auth';
 import bcrypt from 'bcryptjs';
 
 export async function POST(request: Request) {
+  const prisma = getDb();
   try {
     const { email, password, name } = await request.json();
 

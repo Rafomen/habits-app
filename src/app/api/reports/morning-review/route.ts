@@ -1,8 +1,10 @@
+
 import { NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/auth';
-import { prisma } from '@/lib/prisma';
+import { getDb } from '@/lib/prisma';
 
 export async function GET() {
+  const prisma = getDb();
   try {
     const user = await getCurrentUser();
     if (!user) return NextResponse.json({ error: 'Не авторизован' }, { status: 401 });
@@ -102,6 +104,7 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  const prisma = getDb();
   try {
     const user = await getCurrentUser();
     if (!user) return NextResponse.json({ error: 'Не авторизован' }, { status: 401 });

@@ -1,3 +1,10 @@
 name = "habits-app"
-compatibility_date = "2024-01-01"
+compatibility_date = "2024-12-01"
 compatibility_flags = ["nodejs_compat"]
+main = ".open-next/worker.js"
+assets = { directory = ".open-next/assets", binding = "ASSETS" }
+
+[[d1_databases]]
+binding = "habits_db"
+database_name = "habits-db"
+database_id = "6e1913b1-f203-45c1-9721-5aa7c0416faf"

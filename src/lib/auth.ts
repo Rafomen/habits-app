@@ -27,7 +27,8 @@ export async function getCurrentUser() {
   const payload = await verifyToken(token);
   if (!payload) return null;
 
-  const { prisma } = await import('./prisma');
+  const { getDb } = await import('./prisma');
+  const prisma = getDb();
   const user = await prisma.user.findUnique({
     where: { id: payload.userId },
   });
