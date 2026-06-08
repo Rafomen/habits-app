@@ -50,6 +50,9 @@ export default function DashboardPage() {
   const [currentOverdue, setCurrentOverdue] = useState<Task | null>(null);
   const [notDoneComment, setNotDoneComment] = useState('');
   const [showCommentField, setShowCommentField] = useState(false);
+  const [dayCompleted, setDayCompleted] = useState(false);
+  const [dayResult, setDayResult] = useState<any>(null);
+  const [completingDay, setCompletingDay] = useState(false);
 
   const router = useRouter();
   const audioCtxRef = useRef<AudioContext | null>(null);
@@ -265,6 +268,28 @@ export default function DashboardPage() {
       await handleStatus(task.id, 'not_done');
     } else {
       await handleStatus(task.id, 'done');
+    }
+  };
+
+  const completeDay = async () => {
+    setCompletingDay(true);
+    try {
+      const res = await fetch('/api/reports/complete-day', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ date: currentDate }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setDayResult(data);
+        setDayCompleted(true);
+      } else {
+        alert(data.error);
+      }
+    } catch {
+      alert('Ошибка');
+    } finally {
+      setCompletingDay(false);
     }
   };
 
@@ -522,6 +547,59 @@ export default function DashboardPage() {
             <p className="text-xs text-gray-500 mt-3 text-center">
               {overdueQueue.length > 1 ? `Ещё ${overdueQueue.length - 1} задач требуют отчёта` : ''}
             </p>
+          </div>
+        </div>
+      )}
+
+      {/* Complete Day Button */}
+      {!dayCompleted && hasStarted && (
+        <div className="mb-20">
+          <button
+            onClick={completeDay}
+            disabled={completingDay}
+            className="w-full py-3 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white rounded-lg font-medium transition-colors"
+          >
+            {completingDay ? 'Завершаю...' : 'Завершить день'}
+          </button>
+        </div>
+      )}
+
+      {/* Day Complete Result */}
+      {dayCompleted && dayResult && (
+        <div className="fixed inset-0 bg-gray-900/50 flex items-center justify-center z-50 px-4">
+          <div className="bg-white rounded-xl p-6 w-full max-w-sm shadow-xl">
+            <h3 className="text-lg font-bold text-gray-900 mb-4">День завершён!</h3>
+            <div className="space-y-3">
+              <div className="flex justify-between">
+                <span className="text-gray-600">Выполнено</span>
+                <span className="font-medium">{dayResult.completed}/{dayResult.total}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600">Заработано</span>
+                <span className="text-emerald-600 font-bold">+${Math.round(dayResult.earned).toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600">Потеряно</span>
+                <span className="text-red-600 font-bold">−${Math.round(dayResult.lost).toLocaleString()}</span>
+              </div>
+              <div className="border-t pt-3 flex justify-between">
+                <span className="text-gray-900 font-semibold">Итого</span>
+                <span className={`font-bold text-lg ${dayResult.netBalance >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
+                  {dayResult.netBalance >= 0 ? '+' : ''}{Math.round(dayResult.netBalance).toLocaleString()}$
+                </span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-500">Новый баланс</span>
+                <span className="text-gray-700">${Math.round(dayResult.newBalance).toLocaleString()}</span>
+              </div>
+            </div>
+            <p className="text-xs text-gray-400 mt-4">Утром нужно будет ответить про игры и настроение</p>
+            <button
+              onClick={() => { setDayCompleted(false); loadData(); }}
+              className="w-full mt-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg font-medium transition-colors text-gray-700"
+            >
+              Ок
+            </button>
           </div>
         </div>
       )}
