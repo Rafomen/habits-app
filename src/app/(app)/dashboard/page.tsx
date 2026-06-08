@@ -157,7 +157,7 @@ export default function DashboardPage() {
       ]);
 
       if (!userRes.ok) { router.push('/login'); return; }
-      const userData = await userRes.json();
+      const userData = await userRes.json() as { user: any };
       setUser(userData.user);
 
       if (!userData.user.onboarded) { router.push('/onboarding'); return; }

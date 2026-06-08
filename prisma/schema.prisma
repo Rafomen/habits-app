@@ -26,6 +26,7 @@ model User {
   completions     TaskCompletion[]
   reports         DailyReport[]
   balanceLogs     BalanceLog[]
+  passwordResets  PasswordReset[]
 }
 
 model Task {
@@ -94,4 +95,15 @@ model BalanceLog {
   createdAt   DateTime @default(now())
 
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model PasswordReset {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
