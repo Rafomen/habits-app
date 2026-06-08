@@ -10,7 +10,7 @@ export async function POST(request: Request) {
     const user = await getCurrentUser();
     if (!user) return NextResponse.json({ error: 'Не авторизован' }, { status: 401 });
 
-    const { taskId, date, status, comment } = await request.json();
+    const { taskId, date, status, comment } = await request.json() as any;
 
     if (!taskId || !date || !status) {
       return NextResponse.json({ error: 'taskId, date, status обязательны' }, { status: 400 });

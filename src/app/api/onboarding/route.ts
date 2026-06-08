@@ -10,7 +10,7 @@ export async function POST(request: Request) {
     const user = await getCurrentUser();
     if (!user) return NextResponse.json({ error: 'Не авторизован' }, { status: 401 });
 
-    const body = await request.json();
+    const body = await request.json() as any;
     const { wakeTime, sleepTime, timezone, goalAmount, startDate } = body;
 
     const updated = await prisma.user.update({

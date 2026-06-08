@@ -10,7 +10,7 @@ export async function POST(request: Request) {
     const user = await getCurrentUser();
     if (!user) return NextResponse.json({ error: 'Не авторизован' }, { status: 401 });
 
-    const { date } = await request.json();
+    const { date } = await request.json() as any;
     if (!date) return NextResponse.json({ error: 'date обязательна' }, { status: 400 });
 
     // Check if already completed

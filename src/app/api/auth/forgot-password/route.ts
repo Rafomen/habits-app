@@ -7,7 +7,7 @@ import { getRequestContext } from '@cloudflare/next-on-pages';
 export async function POST(request: Request) {
   const prisma = getDb();
   try {
-    const { email } = await request.json();
+    const { email } = await request.json() as any;
 
     if (!email) {
       return NextResponse.json({ error: 'Email обязателен' }, { status: 400 });

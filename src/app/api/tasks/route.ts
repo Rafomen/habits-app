@@ -28,7 +28,7 @@ export async function POST(request: Request) {
     const user = await getCurrentUser();
     if (!user) return NextResponse.json({ error: 'Не авторизован' }, { status: 401 });
 
-    const body = await request.json();
+    const body = await request.json() as any;
     const { title, timeStart, timeEnd, rewardAmount, penaltyAmount, appliesWeekdays, appliesWeekends } = body;
 
     if (!title || rewardAmount == null || penaltyAmount == null) {
@@ -89,7 +89,7 @@ export async function PUT(request: Request) {
     const user = await getCurrentUser();
     if (!user) return NextResponse.json({ error: 'Не авторизован' }, { status: 401 });
 
-    const body = await request.json();
+    const body = await request.json() as any;
     const { id, title, timeStart, timeEnd, rewardAmount, penaltyAmount, appliesWeekdays, appliesWeekends } = body;
 
     const task = await prisma.task.findFirst({ where: { id, userId: user.id } });

@@ -7,7 +7,7 @@ import bcrypt from 'bcryptjs';
 export async function POST(request: Request) {
   const prisma = getDb();
   try {
-    const { token, password } = await request.json();
+    const { token, password } = await request.json() as any;
 
     if (!token || !password) {
       return NextResponse.json({ error: 'Токен и новый пароль обязательны' }, { status: 400 });

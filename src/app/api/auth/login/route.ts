@@ -8,7 +8,7 @@ import bcrypt from 'bcryptjs';
 export async function POST(request: Request) {
   const prisma = getDb();
   try {
-    const { email, password } = await request.json();
+    const { email, password } = await request.json() as any;
 
     if (!email || !password) {
       return NextResponse.json({ error: 'Email и пароль обязательны' }, { status: 400 });
