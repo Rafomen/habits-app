@@ -32,7 +32,7 @@ export default function ReportsPage() {
     try {
       const res = await fetch('/api/reports/submit');
       if (!res.ok) { router.push('/login'); return; }
-      const data = await res.json();
+      const data = await res.json() as any;
       setReports(data.reports || []);
     } catch {
       router.push('/login');

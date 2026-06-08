@@ -21,7 +21,7 @@ export default function SettingsPage() {
     try {
       const res = await fetch('/api/auth/me');
       if (!res.ok) { router.push('/login'); return; }
-      const data = await res.json();
+      const data = await res.json() as any;
       setUser(data.user);
       setWakeTime(data.user.wakeTime || '07:00');
       setSleepTime(data.user.sleepTime || '23:00');

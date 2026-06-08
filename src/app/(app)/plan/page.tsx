@@ -44,7 +44,7 @@ export default function PlanPage() {
     try {
       const res = await fetch('/api/tasks');
       if (!res.ok) { router.push('/login'); return; }
-      const data = await res.json();
+      const data = await res.json() as any;
       setTasks(data.tasks);
     } catch {
       router.push('/login');
@@ -108,7 +108,7 @@ export default function PlanPage() {
       }
 
       if (!res.ok) {
-        const data = await res.json();
+        const data = await res.json() as any;
         setError(data.error);
         return;
       }

@@ -34,7 +34,7 @@ export default function ReviewPage() {
     try {
       const res = await fetch('/api/reports/morning-review');
       if (!res.ok) { router.push('/login'); return; }
-      const data = await res.json();
+      const data = await res.json() as any;
       setReviewData(data);
       if (data.allowedToday) setGamesMinutes(data.allowedToday);
 
@@ -43,7 +43,7 @@ export default function ReviewPage() {
         // Fetch yesterday's completions to find not_done tasks
         const compRes = await fetch(`/api/completions?date=${data.yesterday}`);
         if (compRes.ok) {
-          const compData = await compRes.json();
+          const compData = await compRes.json() as any;
           const notDone = compData.completions
             .filter((c: any) => c.status === 'not_done' && !c.comment)
             .map((c: any) => ({ id: c.taskId, title: c.taskId, comment: '' }));
@@ -52,7 +52,7 @@ export default function ReviewPage() {
             // Get task titles
             const tasksRes = await fetch('/api/tasks');
             if (tasksRes.ok) {
-              const tasksData = await tasksRes.json();
+              const tasksData = await tasksRes.json() as any;
               const taskMap = new Map(tasksData.tasks.map((t: any) => [t.id, t.title]));
               notDone.forEach((nt: any) => { nt.title = taskMap.get(nt.id) || nt.id; });
             }
@@ -114,7 +114,7 @@ export default function ReviewPage() {
       });
 
       if (!res.ok) throw new Error('Ошибка');
-      const data = await res.json();
+      const data = await res.json() as any;
       setResult(data);
       setSubmitted(true);
     } catch {

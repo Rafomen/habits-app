@@ -157,21 +157,21 @@ export default function DashboardPage() {
       ]);
 
       if (!userRes.ok) { router.push('/login'); return; }
-      const userData = await userRes.json() as { user: any };
+      const userData = await userRes.json() as any as { user: any };
       setUser(userData.user);
 
       if (!userData.user.onboarded) { router.push('/onboarding'); return; }
 
-      const tasksData = await tasksRes.json();
+      const tasksData = await tasksRes.json() as any;
       setTasks(tasksData.tasks);
 
-      const compData = await compRes.json();
+      const compData = await compRes.json() as any;
       const compMap = new Map<string, string>();
       compData.completions.forEach((c: Completion) => compMap.set(c.taskId, c.status));
       setCompletions(compMap);
 
       if (statsRes.ok) {
-        const statsData = await statsRes.json();
+        const statsData = await statsRes.json() as any;
         setStats(statsData);
       }
 
@@ -279,7 +279,7 @@ export default function DashboardPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ date: currentDate }),
       });
-      const data = await res.json();
+      const data = await res.json() as any;
       if (res.ok) {
         setDayResult(data);
         setDayCompleted(true);
